@@ -1,0 +1,4 @@
+paramiko
+scp
+pandas
+requests_oauthlib
