@@ -34,3 +34,4 @@ def main(event, context):
 
     print(df.columns)
     print(df.shape)
+    print(today.strftime('%Y年%m月%d日 %H:%M:%S'))
