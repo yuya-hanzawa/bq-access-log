@@ -1,6 +1,7 @@
-terraform/variable.tf
+functions/env.yml
 terraform/.terraform
 terraform/.terraform.lock.hcl
 terraform/terraform.tfstate.backup
 terraform/terraform.tfstate
 terraform/gcp
+.DS_Store

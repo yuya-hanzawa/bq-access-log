@@ -33,3 +33,4 @@ def main(event, context):
     os.remove(log_file)
 
     print(df.columns)
+    print(df.shape)
