@@ -22,16 +22,14 @@ def ssh_get_log_file(port, username, password):
                    )
     
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get('/var/log/nginx/' + log_file, '.')
+            scp.get('/var/log/nginx/' + log_file, '/tmp')
 
 def main(event, context):
     ssh_get_log_file(port, username, password)
 
-    with open(log_file, encoding="utf-8", errors='ignore') as log:
+    with open('/tmp/'+log_file, errors='ignore') as log:
         df = pd.read_json(log, orient='records', lines=True)
-
-    os.remove(log_file)
-
+        
     print(df.columns)
     print(df.shape)
     print(today.strftime('%Y年%m月%d日 %H:%M:%S'))
