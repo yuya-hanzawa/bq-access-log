@@ -2,3 +2,4 @@ paramiko
 scp
 pandas
 requests_oauthlib
+line-bot-sdk
