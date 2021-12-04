@@ -21,7 +21,7 @@ user_id = os.environ.get("USER_ID")
 client = bigquery.Client(project=project_id)
 dataset = client.dataset(detaset_id)
 
-def LINE_errir_notification(channel_access_token, user_id, message):
+def LINE_notification(channel_access_token, user_id, message):
     line_bot_api = LineBotApi(channel_access_token)
 
     try:
@@ -66,8 +66,8 @@ def main(event, context):
         ssh_get_log_file(port, username, password)
 
     except Exception as e:
-        LINE_errir_notification(channel_access_token, user_id, 
-                                   message=e)
+        LINE_notification(channel_access_token, user_id, 
+                          message=e)
         raise(e)
 
     with open(f'/tmp/access.log-{datetime.datetime.now():%Y%m%d}', errors='ignore') as log:
@@ -102,8 +102,11 @@ def main(event, context):
         )
 
         job.result()
+
+        LINE_notification(channel_access_token, user_id, 
+                          message="Successful")
     
     except Exception as e:
-        LINE_errir_notification(channel_access_token, user_id, 
-                                   message=e)
+        LINE_notification(channel_access_token, user_id, 
+                          message=e)
         raise(e)
