@@ -41,7 +41,7 @@ def ssh_get_log_file(port, username, password):
                    )
     
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get(f'/var/log/nginx/access.log-{datetime.datetime.now():%Y%m%d}', '/tmp')
+            scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
 
 def main(event, context):
     """Background Cloud Function to be triggered by Pub/Sub.
@@ -57,20 +57,19 @@ def main(event, context):
     Returns:
         None. The output is written to Cloud Logging.
     """
-    if re.match('([0-9]{4})-([0-9]{2})-([0-9]{2})', base64.b64decode(event['data'])):
-        table_day_format = base64.b64decode(event['data'])
+    if re.match('([0-9]{4})-([0-9]{2})-([0-9]{2})', base64.b64decode(event['data']).decode('utf-8')):
+        day = datetime.datetime.strptime(base64.b64decode(event['data']).decode('utf-8'), '%Y-%m-%d')
     else:
-        table_day_format = datetime.date.today()
+        day = datetime.date.today()
 
     try:
         ssh_get_log_file(port, username, password)
 
     except Exception as e:
-        LINE_notification(channel_access_token, user_id, 
-                          message=e)
+        LINE_notification(channel_access_token, user_id, message=e)
         raise(e)
 
-    with open(f'/tmp/access.log-{datetime.datetime.now():%Y%m%d}', errors='ignore') as log:
+    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as log:
         df = pd.read_json(log, orient='records', lines=True)
 
     job_config = bigquery.LoadJobConfig(
@@ -97,16 +96,14 @@ def main(event, context):
     try:
         job = client.load_table_from_dataframe(
             df,
-            dataset.table(f'access_log-{table_day_format}'),
+            dataset.table(f'access_log-{day:%Y-%m-%d}'),
             job_config=job_config
         )
 
         job.result()
 
-        LINE_notification(channel_access_token, user_id, 
-                          message="Successful")
+        LINE_notification(channel_access_token, user_id, message="Successful")
     
     except Exception as e:
-        LINE_notification(channel_access_token, user_id, 
-                          message=e)
+        LINE_notification(channel_access_token, user_id, message=e)
         raise(e)
