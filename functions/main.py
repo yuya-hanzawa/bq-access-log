@@ -2,6 +2,7 @@ import base64
 import re
 import os
 import datetime
+import traceback
 import pandas as pd
 from paramiko import SSHClient, AutoAddPolicy
 from scp import SCPClient
@@ -30,7 +31,7 @@ def LINE_notification(channel_access_token, user_id, message):
     except LineBotApiError as e:
         raise(e)
 
-def ssh_get_log_file(port, username, password):
+def ssh_get_log_file(port, username, password, day):
     with SSHClient() as ssh:
         ssh.set_missing_host_key_policy(AutoAddPolicy())
 
@@ -42,6 +43,11 @@ def ssh_get_log_file(port, username, password):
     
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
+
+    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as log:
+        df = pd.read_json(log, orient='records', lines=True)
+    
+    return df
 
 def main(event, context):
     """Background Cloud Function to be triggered by Pub/Sub.
@@ -63,14 +69,12 @@ def main(event, context):
         day = datetime.date.today()
 
     try:
-        ssh_get_log_file(port, username, password)
+        df = ssh_get_log_file(port, username, password, day)
 
     except Exception as e:
-        LINE_notification(channel_access_token, user_id, message=e)
+        LINE_notification(channel_access_token, user_id,
+                          message="Error occurred:" + traceback.format_exc())
         raise(e)
-
-    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as log:
-        df = pd.read_json(log, orient='records', lines=True)
 
     job_config = bigquery.LoadJobConfig(
         schema=[
@@ -105,5 +109,6 @@ def main(event, context):
         LINE_notification(channel_access_token, user_id, message="Successful")
     
     except Exception as e:
-        LINE_notification(channel_access_token, user_id, message=e)
+        LINE_notification(channel_access_token, user_id,
+                          message="Error occurred:" + traceback.format_exc())
         raise(e)
