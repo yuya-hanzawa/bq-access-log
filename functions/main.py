@@ -1,3 +1,5 @@
+import base64
+import re
 import os
 import datetime
 import pandas as pd
@@ -15,8 +17,6 @@ username = os.environ.get('USERNAME')
 password = os.environ.get('PASSWORD')
 channel_access_token = os.environ.get("CHANNEL_ACCESS_TOKEN")
 user_id = os.environ.get("USER_ID")
-
-day = f"{datetime.datetime.now():%Y%m%d}"
 
 def LINE_errir_notification(channel_access_token, user_id, message):
     line_bot_api = LineBotApi(channel_access_token)
@@ -38,9 +38,27 @@ def ssh_get_log_file(port, username, password):
                    )
     
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get('/var/log/nginx/access.log-{day}', '/tmp')
+            scp.get(f'/var/log/nginx/access.log-{datetime.datetime.now():%Y%m%d}', '/tmp')
 
 def main(event, context):
+    """Background Cloud Function to be triggered by Pub/Sub.
+    Args:
+         event (dict):  The dictionary with data specific to this type of event. The `@type` field maps to `type.googleapis.com/google.pubsub.v1.PubsubMessage`.
+                        The `data` field maps to the PubsubMessage data in a base64-encoded string. 
+                        The `attributes` field maps to the PubsubMessage attributes if any is present.
+
+         context (google.cloud.functions.Context): Metadata of triggering event including `event_id` which maps to the PubsubMessage messageId, 
+                                                   `timestamp` which maps to the PubsubMessage publishTime, `event_type` which maps to `google.pubsub.topic.publish`, 
+                                                   and `resource` which is a dictionary that describes the service API endpoint pubsub.googleapis.com, 
+                                                   the triggering topic's name, and the triggering event type `type.googleapis.com/google.pubsub.v1.PubsubMessage`.
+    Returns:
+        None. The output is written to Cloud Logging.
+    """
+    if re.match('([0-9]{4})-([0-9]{2})-([0-9]{2})', base64.b64decode(event['data'])):
+        table_day_format = base64.b64decode(event['data'])
+    else:
+        table_day_format = datetime.date.today()
+
     try:
         ssh_get_log_file(port, username, password)
 
@@ -49,7 +67,7 @@ def main(event, context):
                                    message=e)
         raise(e)
 
-    with open('/tmp/access.log-{day}', errors='ignore') as log:
+    with open(f'/tmp/access.log-{datetime.datetime.now():%Y%m%d}', errors='ignore') as log:
         df = pd.read_json(log, orient='records', lines=True)
 
     job_config = bigquery.LoadJobConfig(
@@ -79,7 +97,7 @@ def main(event, context):
     try:
         job = client.load_table_from_dataframe(
             df,
-            dataset.table('access_log_{day}'),
+            dataset.table(f'access_log-{table_day_format}'),
             job_config=job_config
         )
 
