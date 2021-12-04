@@ -38,7 +38,7 @@ def ssh_get_log_file(port, username, password):
                    )
     
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get("/var/log/nginx/access.log-{day}", '/tmp')
+            scp.get('/var/log/nginx/access.log-{day}', '/tmp')
 
 def main(event, context):
     try:
@@ -49,7 +49,7 @@ def main(event, context):
                                    message=e)
         raise(e)
 
-    with open("/tmp/access.log-{day}", errors='ignore') as log:
+    with open('/tmp/access.log-{day}', errors='ignore') as log:
         df = pd.read_json(log, orient='records', lines=True)
 
     job_config = bigquery.LoadJobConfig(
@@ -79,7 +79,7 @@ def main(event, context):
     try:
         job = client.load_table_from_dataframe(
             df,
-            dataset.table("access_log_{day}"),
+            dataset.table('access_log_{day}'),
             job_config=job_config
         )
 
