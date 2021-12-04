@@ -18,6 +18,9 @@ password = os.environ.get('PASSWORD')
 channel_access_token = os.environ.get("CHANNEL_ACCESS_TOKEN")
 user_id = os.environ.get("USER_ID")
 
+client = bigquery.Client(project=project_id)
+dataset = client.dataset(detaset_id)
+
 def LINE_errir_notification(channel_access_token, user_id, message):
     line_bot_api = LineBotApi(channel_access_token)
 
@@ -90,9 +93,6 @@ def main(event, context):
             bigquery.SchemaField("referrer", "STRING", mode='NULLABLE', description='Webページの参照元')
         ]
     )
-        
-    client = bigquery.Client(project=project_id)
-    dataset = client.dataset(detaset_id)
     
     try:
         job = client.load_table_from_dataframe(
