@@ -72,6 +72,9 @@ def main(event, context):
     try:
         df = ssh_get_log_file(port, username, password, day)
 
+        for column in df.columns:
+            df[column] = df[column].astype(str)
+
     except Exception as e:
         LINE_notification(channel_access_token, user_id,
                           message="Error occurred:" + traceback.format_exc())
