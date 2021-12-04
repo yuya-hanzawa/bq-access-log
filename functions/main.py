@@ -39,7 +39,7 @@ def ssh_get_log_file(port, username, password, day):
                     port=port, 
                     username=username,
                     password=password
-                   )
+                    )
     
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
@@ -65,6 +65,7 @@ def main(event, context):
     """
     if re.match('([0-9]{4})-([0-9]{2})-([0-9]{2})', base64.b64decode(event['data']).decode('utf-8')):
         day = datetime.datetime.strptime(base64.b64decode(event['data']).decode('utf-8'), '%Y-%m-%d')
+
     else:
         day = datetime.date.today()
 
