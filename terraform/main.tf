@@ -3,6 +3,18 @@ provider "google" {
   region      = var.region
 }
 
+resource "google_bigquery_dataset" "data_source_for_access_log" {
+  dataset_id                  = "data_source_for_access_log"
+  description                 = "自作のホームページのアクセスログを集計するデータソーステーブル"
+  location                    = "US"
+}
+
+resource "google_bigquery_dataset" "data_mart_for_access_log" {
+  dataset_id                  = "data_mart_for_access_log"
+  description                 = "自作のホームページのアクセスログを集計するデータマートテーブル"
+  location                    = "US"
+}
+
 resource "google_pubsub_topic" "topic" {
   name    = "pubsub_topic"
   project = var.project

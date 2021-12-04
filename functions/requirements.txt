@@ -3,3 +3,4 @@ scp
 pandas
 requests_oauthlib
 line-bot-sdk
+google-cloud-bigquery
