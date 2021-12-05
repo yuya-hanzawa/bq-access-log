@@ -7,20 +7,28 @@ import pandas as pd
 from paramiko import SSHClient, AutoAddPolicy
 from scp import SCPClient
 from google.cloud import bigquery
+from google.cloud import secretmanager
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from linebot.exceptions import LineBotApiError
 
 project_id = os.environ.get('PROJECT_ID')
 detaset_id = os.environ.get('DATASET_ID')
-port = os.environ.get('PORTS')
-username = os.environ.get('USERNAME')
-password = os.environ.get('PASSWORD')
-channel_access_token = os.environ.get("CHANNEL_ACCESS_TOKEN")
-user_id = os.environ.get("USER_ID")
 
-client = bigquery.Client(project=project_id)
-dataset = client.dataset(detaset_id)
+def access_secret_version(project_id, secret_name, secret_ver='latest'):
+    client = secretmanager.SecretManagerServiceClient()
+    name = client.secret_version_path(project_id, secret_name, secret_ver)
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode('UTF-8')
+
+port = access_secret_version(project_id, 'PORTS')
+username = access_secret_version(project_id, 'USERNAME')
+password = access_secret_version(project_id, 'PASSWORD')
+channel_access_token = access_secret_version(project_id, 'CHANNEL_ACCESS_TOKEN')
+user_id = access_secret_version(project_id, 'USER_ID')
+
+bq = bigquery.Client(project=project_id)
+dataset = bq.dataset(detaset_id)
 
 def LINE_notification(channel_access_token, user_id, message):
     line_bot_api = LineBotApi(channel_access_token)
@@ -102,9 +110,9 @@ def main(event, context):
     )
     
     try:
-        job = client.load_table_from_dataframe(
+        job = bq.load_table_from_dataframe(
             df,
-            dataset.table(f'access_log-{day:%Y-%m-%d}'),
+            dataset.table(f'access_log-{day:%Y%m%d}'),
             job_config=job_config
         )
 

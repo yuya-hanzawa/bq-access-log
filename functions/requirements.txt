@@ -4,4 +4,5 @@ pandas
 requests_oauthlib
 line-bot-sdk
 google-cloud-bigquery
+google-cloud-secret-manager
 pyarrow
