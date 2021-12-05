@@ -77,7 +77,7 @@ def main(event, context):
 
     except Exception as e:
         LINE_notification(channel_access_token, user_id,
-                          message="Error occurred:" + traceback.format_exc())
+                          message=f"Error occurred: {traceback.format_exc()}")
         raise(e)
 
     job_config = bigquery.LoadJobConfig(
@@ -114,5 +114,5 @@ def main(event, context):
     
     except Exception as e:
         LINE_notification(channel_access_token, user_id,
-                          message="Error occurred:" + traceback.format_exc())
+                          message=f"Error occurred: {traceback.format_exc()}")
         raise(e)
