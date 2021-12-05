@@ -67,7 +67,7 @@ def main(event, context):
         day = datetime.datetime.strptime(base64.b64decode(event['data']).decode('utf-8'), '%Y-%m-%d')
 
     else:
-        day = datetime.date.today()
+        day = datetime.datetime.now() - datetime.timedelta(days=1)
 
     try:
         df = ssh_get_log_file(port, username, password, day)
