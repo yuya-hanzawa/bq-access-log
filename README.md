@@ -8,15 +8,39 @@
 $ git clone https://github.com/zawa1120/bq-access-log.git
 ```
 
-### 2. install Google Cloud SDK
+### 2. Install Google Cloud SDK & Terraform
 ```
 $ brew install google-cloud-sdk --cask
+$ brew install terraform
 ```
 
-### 3. 
+### 3. Setting up Google Cloud SDK
 ```
-$ gcloud auth login
+$ gcloud init
 ```
+
+### 4. Create a service account and grant access rights
+```
+$ cd terraform
+$ gcloud iam service-accounts create SERVICE_ACCOUNT_NAME --display-name DISPLAY_NAME
+$ gcloud projects add-iam-policy-binding PROJECT_ID --member serviceAccount:SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com --role roles/editor
+$ gcloud iam service-accounts keys create gcp/account.json --iam-account SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com
+$ export GOOGLE_CLOUD_KEYFILE_JSON=gcp/account.json
+```
+### 5. Deploy Terraform
+```
+$ terraform init
+$ terraform plan
+$ terraform apply
+```
+
+### 6. Deploy Cloud Functions
+```
+$ cd functions
+$ bash deploy.sh
+```
+
+
 
 ## Requirements
 - macOS Big Sur 11.4 Apple M1
