@@ -1,6 +1,7 @@
 # bq-access-log
 
 ## Description
+I aggregated the access logs of my own homepage into BigQuery.
 
 ## Data Source Table
 <img width="1142" alt="スクリーンショット 2021-12-06 21 04 55" src="https://user-images.githubusercontent.com/58725085/144843486-100b5b25-4f63-4d6c-9e25-c4fc0df8dac8.png">
