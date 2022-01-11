@@ -3,9 +3,9 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_bigquery_dataset" "data_source_for_access_log" {
-  dataset_id                  = "data_source_for_access_log"
-  description                 = "自作のホームページのアクセスログを集計するデータソーステーブル"
+resource "google_bigquery_dataset" "data_lake_for_access_log" {
+  dataset_id                  = "data_lake_for_access_log"
+  description                 = "自作のホームページのアクセスログを集計するデータレイクテーブル"
   location                    = "US"
 }
 
