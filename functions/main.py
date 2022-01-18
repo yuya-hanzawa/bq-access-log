@@ -2,6 +2,7 @@ import base64
 import datetime
 import os
 import re
+import json
 import traceback
 import pandas as pd
 from paramiko import SSHClient, AutoAddPolicy
@@ -52,8 +53,13 @@ def ssh_get_log_file(port, username, password, day):
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
 
-    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as log:
-        df = pd.read_json(log, orient='records', lines=True)
+    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as f:
+        # この読み取り方法だと一部のデータが想定と違う形で読み込まれる。原因を確認中。
+        # df = pd.read_json(log, orient='records', lines=True)
+        df = pd.DataFrame(index=[])
+        for line in f:
+            data = json.loads(line)
+            df = df.append(data, ignore_index=True)
     
     return df
 
