@@ -53,13 +53,16 @@ def ssh_get_log_file(port, username, password, day):
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
 
-    with open(f'/tmp/access.log-{day:%Y%m%d}', errors='ignore') as f:
+    with open(f'/tmp/access.log-{day:%Y%m%d}', encoding='utf-8', errors='ignore') as f:
         # この読み取り方法だと一部のデータが想定と違う形で読み込まれる。原因を確認中。
         # df = pd.read_json(log, orient='records', lines=True)
         df = pd.DataFrame(index=[])
         for line in f:
             data = json.loads(line)
             df = df.append(data, ignore_index=True)
+
+        for column in df.columns:
+            df[column] = df[column].astype(str)
     
     return df
 
@@ -85,9 +88,6 @@ def main(event, context):
 
     try:
         df = ssh_get_log_file(port, username, password, day)
-
-        for column in df.columns:
-            df[column] = df[column].astype(str)
 
     except Exception as e:
         LINE_notification(channel_access_token, user_id,
