@@ -22,16 +22,10 @@ def access_secret_version(project_id, secret_name, secret_ver='latest'):
     response = client.access_secret_version(name=name)
     return response.payload.data.decode('UTF-8')
 
-port = access_secret_version(project_id, 'PORTS')
-username = access_secret_version(project_id, 'USERNAME')
-password = access_secret_version(project_id, 'PASSWORD')
-channel_access_token = access_secret_version(project_id, 'CHANNEL_ACCESS_TOKEN')
-user_id = access_secret_version(project_id, 'USER_ID')
+def LINE_notification(message):
+    channel_access_token = access_secret_version(project_id, 'CHANNEL_ACCESS_TOKEN')
+    user_id = access_secret_version(project_id, 'USER_ID')
 
-bq = bigquery.Client(project=project_id)
-dataset = bq.dataset(detaset_id)
-
-def LINE_notification(channel_access_token, user_id, message):
     line_bot_api = LineBotApi(channel_access_token)
 
     try:
@@ -40,7 +34,11 @@ def LINE_notification(channel_access_token, user_id, message):
     except LineBotApiError as e:
         raise(e)
 
-def ssh_get_log_file(port, username, password, day):
+def ssh_get_log_file(day):
+    port = access_secret_version(project_id, 'PORTS')
+    username = access_secret_version(project_id, 'USERNAME')
+    password = access_secret_version(project_id, 'PASSWORD')
+
     with SSHClient() as ssh:
         ssh.set_missing_host_key_policy(AutoAddPolicy())
 
@@ -49,7 +47,7 @@ def ssh_get_log_file(port, username, password, day):
                     username=username,
                     password=password
                     )
-    
+  
         with SCPClient(ssh.get_transport()) as scp:
             scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
 
@@ -63,7 +61,7 @@ def ssh_get_log_file(port, username, password, day):
 
         for column in df.columns:
             df[column] = df[column].astype(str)
-    
+
     return df
 
 def main(event, context):
@@ -87,11 +85,10 @@ def main(event, context):
         day = datetime.datetime.now() - datetime.timedelta(days=1)
 
     try:
-        df = ssh_get_log_file(port, username, password, day)
+        df = ssh_get_log_file(day)
 
     except Exception as e:
-        LINE_notification(channel_access_token, user_id,
-                          message=f"Error occurred: {traceback.format_exc()}")
+        LINE_notification(f"Error occurred: {traceback.format_exc()}")
         raise(e)
 
     job_config = bigquery.LoadJobConfig(
@@ -114,8 +111,11 @@ def main(event, context):
             bigquery.SchemaField("referrer", "STRING", mode='NULLABLE', description='Webページの参照元')
         ]
     )
-    
+
     try:
+        bq = bigquery.Client(project=project_id)
+        dataset = bq.dataset(detaset_id)
+
         job = bq.load_table_from_dataframe(
             df,
             dataset.table(f'access_log-{day:%Y%m%d}'),
@@ -124,9 +124,8 @@ def main(event, context):
 
         job.result()
 
-        LINE_notification(channel_access_token, user_id, message="Successful")
-    
+        LINE_notification("Successful")
+
     except Exception as e:
-        LINE_notification(channel_access_token, user_id,
-                          message=f"Error occurred: {traceback.format_exc()}")
+        LINE_notification(f"Error occurred: {traceback.format_exc()}")
         raise(e)
