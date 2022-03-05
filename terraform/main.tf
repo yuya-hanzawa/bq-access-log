@@ -3,14 +3,14 @@ provider "google" {
   region      = var.region
 }
 
-resource "google_bigquery_dataset" "hp_accesslog_data_lake" {
-  dataset_id                  = "hp_accesslog_data_lake"
+resource "google_bigquery_dataset" "HP_access_data_lake" {
+  dataset_id                  = "HP_access_data_lake"
   description                 = "自作のホームページのアクセスログを集計するデータレイクテーブル"
   location                    = "US"
 }
 
-resource "google_bigquery_dataset" "hp_accesslog_data_mart" {
-  dataset_id                  = "hp_accesslog_data_mart"
+resource "google_bigquery_dataset" "HP_access_data_mart" {
+  dataset_id                  = "HP_access_data_mart"
   description                 = "自作のホームページのアクセスログを集計するデータマートテーブル"
   location                    = "US"
 }
