@@ -101,7 +101,6 @@ def main(event, context):
             bigquery.SchemaField("protocol", "STRING", mode='NULLABLE', description='リクエストプロトコル'),
             bigquery.SchemaField("method", "STRING", mode='NULLABLE', description='リクエストされたHTTPメソッド'),
             bigquery.SchemaField("path", "STRING", mode='NULLABLE', description='リクエストされたパス'),
-            bigquery.SchemaField("req", "STRING", mode='NULLABLE', description='リクエストURLおよびHTTPプロトコル'),
             bigquery.SchemaField("size", "STRING", mode='NULLABLE', description='クライアントへの送信バイト数'),
             bigquery.SchemaField("request_time", "STRING", mode='NULLABLE', description='リクエストの処理時間'),
             bigquery.SchemaField("upstream_time", "STRING", mode='NULLABLE', description='サーバーがリクエストの処理にかかった時間'),
@@ -118,7 +117,7 @@ def main(event, context):
 
         job = bq.load_table_from_dataframe(
             df,
-            dataset.table(f'access_log-{day:%Y%m%d}'),
+            dataset.table(f'access-log-{day:%Y%m%d}'),
             job_config=job_config
         )
 
