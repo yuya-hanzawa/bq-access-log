@@ -106,7 +106,7 @@ def main(event, context):
             bigquery.SchemaField("upstream_time", "STRING", mode='NULLABLE', description='サーバーがリクエストの処理にかかった時間'),
             bigquery.SchemaField("user_agent", "STRING", mode='NULLABLE', description='クライアントのブラウザ情報'),
             bigquery.SchemaField("forwardedfor", "STRING", mode='NULLABLE', description='接続元IPアドレス'),
-            bigquery.SchemaField("forwardedproto", "STRING", mode='NULLABLE', description='HTTP／HTTPS判定'),
+            bigquery.SchemaField("forwardedproto", "STRING", mode='NULLABLE', description='HTTP HTTPS判定'),
             bigquery.SchemaField("referrer", "STRING", mode='NULLABLE', description='Webページの参照元')
         ]
     )
@@ -117,7 +117,7 @@ def main(event, context):
 
         job = bq.load_table_from_dataframe(
             df,
-            dataset.table(f'access-log-{day:%Y%m%d}'),
+            dataset.table(f'access_log-{day:%Y%m%d}'),
             job_config=job_config
         )
 
