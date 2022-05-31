@@ -1,0 +1,8 @@
+functions/env.yaml
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate.backup
+terraform/terraform.tfstate
+terraform/gcp
+terraform/variable.tf
+.DS_Store
