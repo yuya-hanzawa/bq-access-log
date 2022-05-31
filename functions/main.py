@@ -24,7 +24,7 @@ def access_secret_version(project_id, secret_name, secret_ver='latest'):
 
 def LINE_notification(message):
     CHANNEL_ACCESS_TOKEN = access_secret_version(PROJECT_ID, 'CHANNEL_ACCESS_TOKEN')
-    USER_ID = access_secret_version(PROJECT_ID, 'USER_ID')
+    USER_ID              = access_secret_version(PROJECT_ID, 'USER_ID')
 
     line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
@@ -35,7 +35,7 @@ def LINE_notification(message):
         raise(e)
 
 def ssh_get_log_file(day):
-    PORT = access_secret_version(PROJECT_ID, 'PORTS')
+    PORT     = access_secret_version(PROJECT_ID, 'PORTS')
     USERNAME = access_secret_version(PROJECT_ID, 'USERNAME')
     PASSWORD = access_secret_version(PROJECT_ID, 'PASSWORD')
 
