@@ -1,6 +1,6 @@
 provider "google" {
-  project     = var.project
-  region      = var.region
+  project     = var.PROJECT
+  region      = var.REGION
 }
 
 resource "google_bigquery_dataset" "HP_access_data_lake" {
@@ -17,13 +17,13 @@ resource "google_bigquery_dataset" "HP_access_data_mart" {
 
 resource "google_pubsub_topic" "topic" {
   name    = "pubsub_topic"
-  project = var.project
+  project = var.PROJECT
 }
 
 resource "google_cloud_scheduler_job" "pubsub_scheduler" {
   name        = "cloud_functions_scheduler"
-  region      = var.region
-  project     = var.project
+  region      = var.REGION
+  project     = var.PROJECT
   schedule    = "0 12 * * *"
   time_zone   = "Asia/Tokyo"
 

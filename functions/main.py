@@ -13,8 +13,8 @@ from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from linebot.exceptions import LineBotApiError
 
-project_id = os.environ.get('PROJECT_ID')
-detaset_id = os.environ.get('DATASET_ID')
+PROJECT_ID = os.environ.get('PROJECT_ID')
+DATASET_ID = os.environ.get('DATASET_ID')
 
 def access_secret_version(project_id, secret_name, secret_ver='latest'):
     client = secretmanager.SecretManagerServiceClient()
@@ -23,29 +23,29 @@ def access_secret_version(project_id, secret_name, secret_ver='latest'):
     return response.payload.data.decode('UTF-8')
 
 def LINE_notification(message):
-    channel_access_token = access_secret_version(project_id, 'CHANNEL_ACCESS_TOKEN')
-    user_id = access_secret_version(project_id, 'USER_ID')
+    CHANNEL_ACCESS_TOKEN = access_secret_version(PROJECT_ID, 'CHANNEL_ACCESS_TOKEN')
+    USER_ID = access_secret_version(PROJECT_ID, 'USER_ID')
 
-    line_bot_api = LineBotApi(channel_access_token)
+    line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 
     try:
-        line_bot_api.push_message(user_id, TextSendMessage(text=message))
+        line_bot_api.push_message(USER_ID, TextSendMessage(text=message))
 
     except LineBotApiError as e:
         raise(e)
 
 def ssh_get_log_file(day):
-    port = access_secret_version(project_id, 'PORTS')
-    username = access_secret_version(project_id, 'USERNAME')
-    password = access_secret_version(project_id, 'PASSWORD')
+    PORT = access_secret_version(PROJECT_ID, 'PORTS')
+    USERNAME = access_secret_version(PROJECT_ID, 'USERNAME')
+    PASSWORD = access_secret_version(PROJECT_ID, 'PASSWORD')
 
     with SSHClient() as ssh:
         ssh.set_missing_host_key_policy(AutoAddPolicy())
 
         ssh.connect(hostname='yuya-hanzawa.com', 
-                    port=port, 
-                    username=username,
-                    password=password
+                    port=PORT, 
+                    username=USERNAME,
+                    password=PASSWORD
                     )
   
         with SCPClient(ssh.get_transport()) as scp:
@@ -112,8 +112,8 @@ def main(event, context):
     )
 
     try:
-        bq = bigquery.Client(project=project_id)
-        dataset = bq.dataset(detaset_id)
+        bq = bigquery.Client(project=PROJECT_ID)
+        dataset = bq.dataset(DATASET_ID)
 
         job = bq.load_table_from_dataframe(
             df,
