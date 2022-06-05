@@ -1,4 +1,5 @@
 functions/env.yaml
+functions/deploy.sh
 terraform/.terraform
 terraform/.terraform.lock.hcl
 terraform/terraform.tfstate.backup

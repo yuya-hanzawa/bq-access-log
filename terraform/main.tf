@@ -12,27 +12,27 @@ resource "google_storage_bucket" "Create_GCS_For_Cloud_Functions" {
 resource "google_bigquery_dataset" "Create_Lake_Table" {
   dataset_id  = "HP_access_data_lake"
   description = "自作のホームページのアクセスログを集計するデータレイクテーブル"
-  location    = "US"
+  location    = var.REGION
 }
 
 resource "google_bigquery_dataset" "Creata_Mart_Table" {
   dataset_id  = "HP_access_data_mart"
   description = "自作のホームページのアクセスログを集計するデータマートテーブル"
-  location    = "US"
+  location    = var.REGION
 }
 
 resource "google_pubsub_topic" "Make_Topic_For_GCF" {
-  name    = "access_log_topic"
+  name    = "access-log-topic"
   project = var.PROJECT
 }
 
 resource "google_cloud_scheduler_job" "pubsub_scheduler" {
-  name      = "cloud_functions_scheduler"
+  name      = "gcf_scheduler"
   schedule  = "0 12 * * *"
   time_zone = "Asia/Tokyo"
 
   pubsub_target {
     topic_name = google_pubsub_topic.Make_Topic_For_GCF.id
-    data       = base64encode("cloud_functions_scheduler")
+    data       = base64encode("gcf_scheduler")
   }
 }

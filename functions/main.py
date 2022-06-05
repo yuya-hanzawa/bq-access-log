@@ -49,7 +49,7 @@ def ssh_get_log_file(day):
                     )
   
         with SCPClient(ssh.get_transport()) as scp:
-            scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp')
+            scp.get(f'/var/log/nginx/access.log-{day:%Y%m%d}', '/tmp/')
 
     with open(f'/tmp/access.log-{day:%Y%m%d}', encoding='utf-8', errors='ignore') as f:
         # この読み取り方法だと一部のデータが想定と違う形で読み込まれる。原因を確認中。
@@ -117,7 +117,7 @@ def main(event, context):
 
         job = bq.load_table_from_dataframe(
             df,
-            dataset.table(f'access_log-{day:%Y%m%d}'),
+            dataset.table(f'access_log_{day:%Y%m%d}'),
             job_config=job_config
         )
 
