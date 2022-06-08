@@ -10,7 +10,7 @@ WITH table AS (
     DATE_SUB(@run_date, INTERVAL 1 DAY),
     COUNT(time) pv
   FROM
-    `bigquery-access-log.HP_access_data_lake.access-log-*`
+    `bigquery-access-log.HP_access_data_lake.access_log_*`
   WHERE
     _TABLE_SUFFIX = FORMAT_DATE('%Y%m%d',DATE_SUB(@run_date, INTERVAL 1 DAY))
 )
