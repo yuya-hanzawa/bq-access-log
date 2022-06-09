@@ -13,7 +13,7 @@
 ## 学んだこと＆発見
 1. Terraformの書き方、特にmoduleの理解が深まった。
 2. Jsonlをpandasで処理すると想定外の挙動をしたので改めて調査する。
-3. 作業の途中でBigQueryテーブルのバックアップを取りたい場面があったので以下のコマンドでCloud Storageに格納した。
+3. 作業の途中でBigQueryのテーブルのバックアップを取りたい場面があったので以下のコマンドでCloud Storageに格納した。
 ```
 for i in $(bq ls -n 1000 HP_access_data_lake | grep "TABLE" | awk '{ print $1 }'); do
   bq extract HP_access_data_lake.${i} gs://ファイルのパス/${i}.csv
@@ -46,14 +46,14 @@ bash deploy.sh
 
 ## 環境
 - macOS Big Sur 11.4 Apple M1
-  - Homebrew 3.3.6
+  - Homebrew 3.4.1
 
 </br>
 
 - Google Cloud SDK 365.0.1
-  - bq 2.0.71
-  - core 2021.11.19
-  - gsutil 5.5
+  - bq 2.0.74
+  - core 2022.05.27
+  - gsutil 5.10
 
 </br>
 
