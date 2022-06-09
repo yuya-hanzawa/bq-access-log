@@ -6,7 +6,7 @@
 </br>
 
 ## ワークフロー
-
+![access-log](https://user-images.githubusercontent.com/58725085/172890313-c67c9d30-7186-41da-9eb0-d87831039ce9.png)
 
 </br>
 
@@ -22,8 +22,6 @@ git clone https://github.com/zawa1120/bq-access-log.git
 ```
 
 ### 2. Terraformやgcloudの各種初期設定
-
-</br>
 
 ### 3. Cloud Functionsとスケジュラークエリのデプロイ
 ```
