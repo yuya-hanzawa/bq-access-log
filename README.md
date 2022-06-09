@@ -1,7 +1,7 @@
 # bq-access-log
 
 ## 目的
-自作のホームページからアクセスログを収集し、Google Cloud PlatformのBigQueryにログデータを格納する。
+自作のホームページからアクセスログを収集し、Google Cloud PlatformのBigQueryにログデータを格納するパイプラインを作成する。
 
 </br>
 
@@ -11,7 +11,8 @@
 </br>
 
 ## 学んだこと＆発見
-### 1.
+### 1. Terraformの書き方、特にmoduleの理解が深まった。
+### 2. Jsonlをpandasで処理すると想定外の挙動をしたので改めて調査する。
 
 </br>
 
@@ -35,10 +36,14 @@ bash deploy.sh
 - macOS Big Sur 11.4 Apple M1
   - Homebrew 3.3.6
 
+</br>
+
 - Google Cloud SDK 365.0.1
   - bq 2.0.71
   - core 2021.11.19
   - gsutil 5.5
+
+</br>
 
 - Tools
   - Terraform v1.0.11
