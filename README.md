@@ -6,7 +6,7 @@
 </br>
 
 ## ワークフロー
-![access-log](https://user-images.githubusercontent.com/58725085/172890313-c67c9d30-7186-41da-9eb0-d87831039ce9.png)
+![access-log](https://user-images.githubusercontent.com/58725085/172891660-e67f7d5c-8494-4c97-9155-a11b28345d45.png)
 
 </br>
 
