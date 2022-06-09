@@ -19,7 +19,7 @@ for i in $(bq ls -n 1000 HP_access_data_lake | grep "TABLE" | awk '{ print $1 }'
   bq extract HP_access_data_lake.${i} gs://ファイルのパス/${i}.csv
 done
 ```
-4. 3の後に反対に以下のコマンドでCloud StorageのデータをBigQueryに戻した。
+4. 次は反対に以下のコマンドでCloud StorageのデータをBigQueryに戻した。
 ```
 for file in $(gsutil ls gs://ファイルのパス/); do
   bq load --source_format=CSV HP_access_data_lake.access-log-$(echo ${file} | sed -e 's/[^0-9]//g') ${file} ./schema.json
