@@ -16,7 +16,7 @@ resource "google_bigquery_dataset" "Creata_Mart_Table" {
   location    = var.REGION
 }
 
-resource "google_pubsub_topic" "Make_Topic_For_GCF" {
+resource "google_pubsub_topic" "pubsub_topic" {
   name    = "access-log-topic"
 }
 
@@ -26,7 +26,7 @@ resource "google_cloud_scheduler_job" "pubsub_scheduler" {
   time_zone = "Asia/Tokyo"
 
   pubsub_target {
-    topic_name = "google_pubsub_topic.Make_Topic_For_GCF.id"
+    topic_name = google_pubsub_topic.pubsub_topic.id
     data       = base64encode("gcf_scheduler")
   }
 }
