@@ -11,8 +11,20 @@
 </br>
 
 ## 学んだこと＆発見
-### 1. Terraformの書き方、特にmoduleの理解が深まった。
-### 2. Jsonlをpandasで処理すると想定外の挙動をしたので改めて調査する。
+1. Terraformの書き方、特にmoduleの理解が深まった。
+2. Jsonlをpandasで処理すると想定外の挙動をしたので改めて調査する。
+3. 作業の途中でBigQueryテーブルのバックアップを取りたい場面があったので以下のコマンドでCloud Storageに格納した。
+```
+for i in $(bq ls -n 1000 HP_access_data_lake | grep "TABLE" | awk '{ print $1 }'); do
+  bq extract HP_access_data_lake.${i} gs://ファイルのパス/${i}.csv
+done
+```
+4. 3の後に反対に以下のコマンドでCloud StorageのデータをBigQueryに戻した。
+```
+for file in $(gsutil ls gs://ファイルのパス/); do
+  bq load --source_format=CSV HP_access_data_lake.access-log-$(echo ${file} | sed -e 's/[^0-9]//g') ${file} ./schema.json
+done
+```
 
 </br>
 
